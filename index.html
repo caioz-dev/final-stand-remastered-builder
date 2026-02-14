@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Final Stand: Remastered Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0e17;
+      --bg-card: #12192b;
+      --accent: #ff6b35;
+      --accent-glow: rgba(255, 107, 53, 0.4);
+      --ki-color: #00d4ff;
+      --melee-color: #ff4444;
+      --text: #e8eef7;
+      --text-dim: #8a9bb5;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(ellipse at 20% 0%, rgba(255, 107, 53, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(0, 212, 255, 0.06) 0%, transparent 50%),
+        linear-gradient(180deg, var(--bg-dark) 0%, #0d1320 100%);
+    }
+
+    .container {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--ki-color) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 40px var(--accent-glow);
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-top: 0.35rem;
+      letter-spacing: 0.2em;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 107, 53, 0.15);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      margin-bottom: 0.4rem;
+    }
+
+    select {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      background: rgba(10, 14, 23, 0.7);
+      border: 1px solid rgba(255, 107, 53, 0.25);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    select:hover, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 16px var(--accent-glow);
+      outline: none;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      background: rgba(10, 14, 23, 0.7);
+      border: 1px solid rgba(255, 107, 53, 0.25);
+      border-radius: 8px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="number"]:hover, input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 16px var(--accent-glow);
+      outline: none;
+    }
+
+    .level-range {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    .level-range input {
+      flex: 1;
+    }
+
+    .level-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1rem;
+      color: var(--accent);
+      min-width: 3ch;
+    }
+
+    .results {
+      display: none;
+      margin-top: 1.5rem;
+    }
+
+    .results.visible {
+      display: block;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.95rem;
+    }
+
+    .stat-row:last-child {
+      border-bottom: none;
+    }
+
+    .stat-name {
+      color: var(--text-dim);
+    }
+
+    .stat-value {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .stat-value.ki { color: var(--ki-color); }
+    .stat-value.melee { color: var(--melee-color); }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .step {
+      transition: opacity 0.3s ease;
+    }
+
+    .points-info {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      margin-bottom: 1rem;
+    }
+
+    .points-info strong {
+      color: var(--accent);
+    }
+
+    .points-remaining {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      border-radius: 6px;
+      background: rgba(255, 107, 53, 0.1);
+      color: var(--accent);
+      text-align: center;
+    }
+
+    .points-remaining.warning {
+      background: rgba(255, 68, 68, 0.15);
+      color: #ff6b6b;
+    }
+
+    .stat-input-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .stat-input-row label {
+      flex: 1;
+      margin-bottom: 0;
+      font-size: 0.9rem;
+    }
+
+    .stat-input-row input {
+      width: 4rem;
+      text-align: center;
+      padding: 0.5rem;
+    }
+
+    .stat-input-row .btn {
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: rgba(255, 107, 53, 0.2);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+
+    .stat-input-row .btn:hover {
+      background: rgba(255, 107, 53, 0.4);
+    }
+
+    .stat-input-row .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .points-breakdown {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .points-breakdown span {
+      display: inline-block;
+      margin-right: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Final Stand: Remastered Builder</h1>
+      <p class="subtitle">Calculadora de Status</p>
+    </header>
+
+    <div class="card">
+      <p class="card-title">1. Raça</p>
+      <label for="race">Escolha sua raça</label>
+      <select id="race">
+        <option value="">-- Selecione --</option>
+        <option value="acrosian">Acrosian</option>
+        <option value="namekian">Namekian</option>
+        <option value="android">Android</option>
+        <option value="human">Human</option>
+        <option value="jiren">Jiren</option>
+        <option value="majin">Majin</option>
+        <option value="saiyan">Saiyan</option>
+        <option value="tuffle">Tuffle</option>
+        <option value="alien">Alien</option>
+      </select>
+    </div>
+
+    <div class="card step hidden" id="subrace-card">
+      <p class="card-title">1.1 Subraça (Alien)</p>
+      <label for="subrace">Escolha a subraça alien</label>
+      <select id="subrace">
+        <option value="">-- Selecione --</option>
+        <option value="appule">Appule</option>
+        <option value="beerus">Beerus</option>
+        <option value="burter">Burter</option>
+        <option value="dodoria">Dodoria</option>
+        <option value="pikon">Pikon</option>
+      </select>
+    </div>
+
+    <div class="card step" id="level-card">
+      <p class="card-title">2. Level</p>
+      <label for="level">Level (1 - 305)</label>
+      <div class="level-range">
+        <input type="range" id="level" min="1" max="305" value="1">
+        <input type="number" id="level-num" min="1" max="305" value="1" style="width: 4.5rem;">
+      </div>
+    </div>
+
+    <div class="card step" id="points-card">
+      <p class="card-title">3. Distribua seus pontos</p>
+      <p class="points-info">Todos os status começam em <strong>0</strong>. No level 1 você tem <strong>2 pontos extras</strong> (level + 1). Escolha onde colocar cada ponto:</p>
+      <div class="points-remaining" id="points-remaining">Pontos restantes: 2</div>
+      <div class="points-breakdown" id="points-breakdown"></div>
+      <div id="points-distribution"></div>
+    </div>
+
+    <div class="card step hidden" id="transform-card">
+      <p class="card-title">4. Transformação</p>
+      <label for="transform">Escolha sua transformação</label>
+      <select id="transform" onchange="update()">
+        <option value="none">Nenhuma</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <p class="card-title">5. Cápsulas</p>
+    
+      <label>
+        <input type="checkbox" id="bestAccessories">
+        Melhores Acessórios + Power Capsule
+      </label>
+    
+      <br><br>
+    
+      <label>
+        <input type="checkbox" id="burningFighter">
+        Burning Fighter Capsule
+      </label>
+    </div>
+    
+
+    <div class="card results" id="results-card">
+      <p class="card-title">Status Finais</p>
+      <div id="results"></div>
+    </div>
+  </div>
+
+  <script>
+    const STATS = ['healthMax', 'kiMax', 'meleeDmg', 'kiDmg', 'kiResistance', 'meleeResistance', 'speed'];
+    const STAT_LABELS = {
+      healthMax: 'Health Max',
+      kiMax: 'Ki Max',
+      meleeDmg: 'Melee Dmg',
+      kiDmg: 'Ki Dmg',
+      kiResistance: 'Ki Resistance',
+      meleeResistance: 'Melee Resistance',
+      speed: 'Speed'
+    };
+
+    const RACE_BONUS = {
+      acrosian: { every: 2, stats: 'all' },
+      namekian: { every: 2, stats: 'all' },
+      android: { every: 1, stats: 'all' },
+      human: { every: 2, stats: 'all' },
+      jiren: { every: 2, stats: 'all' },
+      majin: { every: 2, stats: 'all' },
+      saiyan: { every: 3, stats: 'all' },
+      tuffle: { every: 2, stats: 'all' },
+      alien: {
+        appule: { perLevel: { meleeDmg: 0.75, meleeResistance: 0.25 }, every: 2 },
+        beerus: { perLevel: { kiDmg: 0.75, kiResistance: 0.25 }, every: 2 },
+        burter: { perLevel: { speed: 0.75, meleeDmg: 0.25 }, every: 2 },
+        dodoria: { perLevel: { meleeResistance: 0.75, kiResistance: 0.75, meleeDmg: 0.25, kiDmg: 0.25 }, every: 2 },
+        pikon: { perLevel: { kiMax: 0.75, speed: 0.25 }, every: 2 }
+      }
+    };
+
+    const TRANSFORMS = {
+      acrosian: [
+        { id: 'second_form', name: 'Second Form', kiDmg: 90, kiResistance: 34, meleeDmg: 45, meleeResistance: 34, speed: 45 },
+        { id: 'third_form', name: 'Third Form', kiDmg: 165, kiResistance: 79, meleeDmg: 105, meleeResistance: 79, speed: 165 },
+        { id: 'final_form', name: 'Final Form', kiDmg: 195, kiResistance: 113, meleeDmg: 195, meleeResistance: 113, speed: 195 },
+        { id: 'chrome_form', name: 'Chrome Form', kiDmg: 0, kiResistance: 203, meleeDmg: 300, meleeResistance: 203, speed: 120 },
+        { id: 'golden_form', name: 'Golden Form', kiDmg: 450, kiResistance: 281, meleeDmg: 375, meleeResistance: 281, speed: 375 }
+      ],
+      namekian: [
+        { id: 'potential', name: 'Potential Unleashed', kiDmg: 113, kiResistance: 113, meleeDmg: 113, meleeResistance: 113, speed: 113 },
+        { id: 'ultimate_namekian', name: 'Ultimate Namekian', kiDmg: 165, kiResistance: 165, meleeDmg: 165, meleeResistance: 165, speed: 165 },
+        { id: 'orange_namekian', name: 'Orange Namekian', special: 'orange_namekian', addAfter: { kiDmg: 38, kiResistance: 38, meleeDmg: 38, meleeResistance: 38, speed: 38 } }
+      ],
+      alien: [
+        { id: 'kaioken', name: 'Kaioken', multiplier: { kiDmg: 2.5, meleeDmg: 2.5, speed: 2.5 } },
+        { id: 'potential', name: 'Potential Unleashed', kiDmg: 113, kiResistance: 113, meleeDmg: 113, meleeResistance: 113, speed: 113 },
+        { id: 'mystic', name: 'Mystic', kiDmg: 195, kiResistance: 195, meleeDmg: 195, meleeResistance: 195, speed: 195 },
+        { id: 'fear', name: 'Fear', kiDmg: 330, kiResistance: 150, meleeDmg: 330, meleeResistance: 330, speed: 330 }
+      ],
+      android: [],
+      human: [
+        { id: 'kaioken', name: 'Kaioken', multiplier: { kiDmg: 2.5, meleeDmg: 2.5, speed: 2.5 } },
+        { id: 'kaioken_x2', name: 'Kaioken x2', multiplier: { kiDmg: 4, meleeDmg: 4, speed: 4 } },
+        { id: 'kaioken_x4', name: 'Kaioken x4', multiplier: { kiDmg: 7, meleeDmg: 7, speed: 7 } },
+        { id: 'mystic', name: 'Mystic', kiDmg: 195, kiResistance: 195, meleeDmg: 195, meleeResistance: 195, speed: 195 },
+        { id: 'mystic_kaioken', name: 'Mystic Kaioken', kiDmg: 390, kiResistance: 390, meleeDmg: 390, meleeResistance: 390, speed: 390 }
+      ],
+      jiren: [
+        { id: 'emotion', name: 'Emotion', kiDmg: 30, kiResistance: 30, meleeDmg: 30, meleeResistance: 30, speed: 30 },
+        { id: 'half_emotion', name: 'Half Emotion', kiDmg: 60, kiResistance: 60, meleeDmg: 60, meleeResistance: 60, speed: 60 },
+        { id: 'full_emotion', name: 'Full Emotion', kiDmg: 150, kiResistance: 150, meleeDmg: 150, meleeResistance: 150, speed: 150 },
+        { id: 'fear', name: 'Fear', kiDmg: 330, kiResistance: 150, meleeDmg: 330, meleeResistance: 330, speed: 330 }
+      ],
+      majin: [
+        { id: 'purification', name: 'Purification', kiDmg: 120, kiResistance: 120, meleeDmg: 120, meleeResistance: 120, speed: 120 },
+        { id: 'true_anger', name: 'True Anger', kiDmg: 338, kiResistance: 225, meleeDmg: 338, meleeResistance: 225, speed: 225 }
+      ],
+      saiyan: [
+        { id: 'ssj', name: 'SSJ', kiDmg: 75, kiResistance: 75, meleeDmg: 75, meleeResistance: 75, speed: 75 },
+        { id: 'ssj_grade2', name: 'SSJ Grade 2', kiDmg: 113, kiResistance: 113, meleeDmg: 113, meleeResistance: 113, speedMult: 1.5 },
+        { id: 'ssj2', name: 'SSJ 2', kiDmg: 150, kiResistance: 150, meleeDmg: 150, meleeResistance: 150, speed: 150 },
+        { id: 'ssj3', name: 'SSJ 3', kiDmg: 225, kiResistance: 225, meleeDmg: 225, meleeResistance: 225, speed: 225 },
+        { id: 'lssj', name: 'LSSJ', kiDmg: 300, kiResistance: 300, meleeDmg: 300, meleeResistance: 300, speed: 300 },
+        { id: 'ssjg', name: 'SSJG', special: 'ssjg', addAfter: { kiDmg: 8, kiResistance: 8, meleeDmg: 8, meleeResistance: 8, speed: 9 } }
+      ],
+      tuffle: []
+    };
+
+    let distributedPoints = {};
+    let lastPointsLevel = 0;
+
+    function calcRaceStats(race, subrace, level) {
+      const stats = {};
+      if (level === 1) {
+        for (const s of STATS) stats[s] = 0;
+        return stats;
+      }
+      for (const s of STATS) stats[s] = 0;
+
+      if (race === 'alien' && subrace) {
+        const alienData = RACE_BONUS.alien[subrace];
+        const everyBonus = Math.floor(level / alienData.every);
+        for (const stat of STATS) stats[stat] += everyBonus;
+        for (const [stat, val] of Object.entries(alienData.perLevel)) {
+          stats[stat] += val * (level - 1);
+        }
+        return stats;
+      }
+
+      const config = RACE_BONUS[race];
+      if (!config) return stats;
+
+      const bonus = config.every === 1 ? level : Math.floor(level / config.every);
+      for (const stat of STATS) stats[stat] += bonus;
+      return stats;
+    }
+
+    function getTotalPoints(race, level) {
+      let total = level + 1;
+      if (race === 'namekian') {
+        if (level >= 35) total += 20;
+        if (level >= 100) total += 20;
+      }
+      return total;
+    }
+
+    function getPointsBreakdown(race, level) {
+      const base = level + 1;
+      let level35 = 0, level100 = 0;
+      if (race === 'namekian') {
+        if (level >= 35) level35 = 20;
+        if (level >= 100) level100 = 20;
+      }
+      return { base, level35, level100, total: base + level35 + level100 };
+    }
+
+    function getDefaultDistribution(level) {
+      const dist = {};
+      for (const s of STATS) dist[s] = 0;
+      return dist;
+    }
+
+    function buildPointsUI(race, level) {
+      const total = getTotalPoints(race, level);
+      const breakdown = getPointsBreakdown(race, level);
+      const breakdownKey = race + '-' + level;
+      if (lastPointsLevel !== breakdownKey) {
+        lastPointsLevel = breakdownKey;
+        distributedPoints = getDefaultDistribution(level);
+      }
+      const current = Object.values(distributedPoints).reduce((a, b) => a + b, 0);
+      if (current !== total) {
+        distributedPoints = getDefaultDistribution(level);
+      }
+      const bdEl = document.getElementById('points-breakdown');
+      const parts = ['Base (level + 1): ' + breakdown.base];
+      if (breakdown.level35) parts.push('Bônus Level 35 (Namekian): +20');
+      if (breakdown.level100) parts.push('Bônus Level 100 (Namekian): +20');
+      bdEl.innerHTML = '<span><strong>Origem dos pontos:</strong></span>' + parts.map(p => '<span>' + p + '</span>').join(' · ');
+      const container = document.getElementById('points-distribution');
+      container.innerHTML = '';
+      for (const stat of STATS) {
+        const row = document.createElement('div');
+        row.className = 'stat-input-row';
+        const lbl = document.createElement('label');
+        lbl.textContent = STAT_LABELS[stat];
+        const inp = document.createElement('input');
+        inp.type = 'number';
+        inp.min = 0;
+        inp.max = total;
+        inp.value = distributedPoints[stat] || 0;
+        inp.dataset.stat = stat;
+        const btnMinus = document.createElement('button');
+        btnMinus.type = 'button';
+        btnMinus.className = 'btn';
+        btnMinus.textContent = '−';
+        btnMinus.dataset.stat = stat;
+        const btnPlus = document.createElement('button');
+        btnPlus.type = 'button';
+        btnPlus.className = 'btn';
+        btnPlus.textContent = '+';
+        btnPlus.dataset.stat = stat;
+        const updateBtns = () => {
+          const val = parseInt(inp.value, 10) || 0;
+          const used = STATS.reduce((s, k) => s + (k === stat ? val : (distributedPoints[k] || 0)), 0);
+          btnMinus.disabled = val <= 0;
+          btnPlus.disabled = used >= total;
+        };
+        const sync = () => {
+          const sum = STATS.reduce((s, k) => s + (distributedPoints[k] || 0), 0);
+          document.getElementById('points-remaining').textContent = 'Pontos restantes: ' + Math.max(0, total - sum);
+          document.getElementById('points-remaining').classList.toggle('warning', sum > total);
+          update();
+        };
+        inp.addEventListener('input', () => {
+          let v = parseInt(inp.value, 10) || 0;
+          v = Math.max(0, Math.min(total, v));
+          inp.value = v;
+          distributedPoints[stat] = v;
+          updateBtns();
+          sync();
+        });
+        btnMinus.addEventListener('click', () => {
+          const v = Math.max(0, (distributedPoints[stat] || 0) - 1);
+          distributedPoints[stat] = v;
+          inp.value = v;
+          updateBtns();
+          sync();
+        });
+        btnPlus.addEventListener('click', () => {
+          const used = STATS.reduce((s, k) => s + (distributedPoints[k] || 0), 0);
+          if (used >= total) return;
+          const v = (distributedPoints[stat] || 0) + 1;
+          distributedPoints[stat] = v;
+          inp.value = v;
+          updateBtns();
+          sync();
+        });
+        updateBtns();
+        row.appendChild(lbl);
+        row.appendChild(btnMinus);
+        row.appendChild(inp);
+        row.appendChild(btnPlus);
+        container.appendChild(row);
+      }
+      const sum = STATS.reduce((s, k) => s + (distributedPoints[k] || 0), 0);
+      document.getElementById('points-remaining').textContent = 'Pontos restantes: ' + Math.max(0, total - sum);
+      document.getElementById('points-remaining').classList.toggle('warning', sum > total);
+    }
+
+    function getStatsFromDistribution(race, level) {
+      const total = getTotalPoints(race, level);
+      const sum = STATS.reduce((s, k) => s + (distributedPoints[k] || 0), 0);
+      if (sum !== total || !distributedPoints) return null;
+      return { ...distributedPoints };
+    }
+
+    function applyTransform(stats, race, transformId) {
+  const list = TRANSFORMS[race] || [];
+  const t = list.find(x => x.id === transformId);
+  if (!t) return stats;
+
+  const out = { ...stats };
+
+  // 🔥 Orange Namekian e SSJG
+  if (t.special === 'orange_namekian' || t.special === 'ssjg') {
+    const statsToDouble = ['kiDmg', 'kiResistance', 'meleeDmg', 'meleeResistance'];
+
+    // 1️⃣ Soma primeiro
+    for (const [stat, val] of Object.entries(t.addAfter || {})) {
+      out[stat] = (out[stat] || stats[stat]) + val;
+    }
+
+    // 2️⃣ Depois multiplica
+    for (const s of statsToDouble) {
+      out[s] = (out[s] || stats[s]) * 2;
+    }
+
+    return out;
+  }
+
+  // 🔹 Transformações com multiplicador
+  if (t.multiplier) {
+    for (const [stat, mult] of Object.entries(t.multiplier)) {
+      out[stat] = Math.round(stats[stat] * mult);
+    }
+  }
+
+  // 🔹 Transformações que somam valores fixos
+  for (const stat of ['kiDmg', 'kiResistance', 'meleeDmg', 'meleeResistance', 'speed']) {
+    if (t[stat] != null) out[stat] += t[stat];
+    if (t.speedMult != null && stat === 'speed') {
+      out[stat] = Math.round(stats[stat] * t.speedMult);
+    }
+  }
+
+  return out;
+}
+
+
+    function roundStats(stats) {
+      const out = {};
+      for (const [k, v] of Object.entries(stats)) {
+        out[k] = Math.round(v * 100) / 100;
+      }
+      return out;
+    }
+
+    function update() {
+      const race = document.getElementById('race').value;
+      const subrace = document.getElementById('subrace').value;
+      const level = parseInt(document.getElementById('level').value, 10) || 1;
+      const transformId = document.getElementById('transform').value;
+      const bestAccessories = document.getElementById('bestAccessories')?.checked;
+      const burningFighter = document.getElementById('burningFighter')?.checked;
+
+
+      document.getElementById('subrace-card').classList.toggle('hidden', race !== 'alien');
+      document.getElementById('level-num').value = level;
+
+      if (lastPointsLevel !== race + '-' + level) buildPointsUI(race, level);
+      const transforms = TRANSFORMS[race] || [];
+      const transformSelect = document.getElementById("transform");
+
+      const currentValue = transformSelect.value;
+      transformSelect.innerHTML = '<option value="none">Nenhuma</option>';
+for (const t of transforms) {
+  const option = document.createElement("option");
+  option.value = t.id;
+  option.textContent = t.name;
+  transformSelect.appendChild(option);
+}
+
+if (transforms.some(t => t.id === currentValue)) {
+  transformSelect.value = currentValue;
+} else {
+  transformSelect.value = "none";
+}
+
+
+      if (race === 'alien' && !subrace) {
+        document.getElementById('transform-card').classList.add('hidden');
+      } else {
+        document.getElementById('transform-card').classList.remove('hidden');
+        for (const t of transforms) {
+          const opt = document.createElement('option');
+          opt.value = t.id;
+          opt.textContent = t.name;
+          transformSelect.appendChild(opt);
+        }
+      }
+
+      const raceBase = calcRaceStats(race, race === 'alien' ? subrace : null, level);
+      let extraPoints = getStatsFromDistribution(race, level);
+      if (!extraPoints) {
+        const fallback = getDefaultDistribution(level);
+        distributedPoints = { ...fallback };
+        extraPoints = { ...fallback };
+      }
+      let stats = {};
+      for (const s of STATS) {
+        stats[s] = raceBase[s] + (extraPoints[s] || 0);
+      }
+
+      if (bestAccessories) {
+       stats.kiMax += 30;
+       stats.meleeDmg += 55;
+      }
+
+      if (transformId && transformId !== 'none') {
+        const beforeTransform = { ...stats };
+        stats = applyTransform(stats, race, transformId);
+
+     if (burningFighter) {
+      for (const s of STATS) {
+       const bonus = stats[s] - beforeTransform[s];
+       stats[s] += bonus * 0.15;
+    }
+  }
+}
+
+      stats = roundStats(stats);
+
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+      const statClasses = { kiMax: 'ki', kiDmg: 'ki', kiResistance: 'ki', meleeDmg: 'melee', meleeResistance: 'melee' };
+      for (const stat of STATS) {
+        const row = document.createElement('div');
+        row.className = 'stat-row';
+        const valSpan = document.createElement('span');
+        valSpan.className = 'stat-value ' + (statClasses[stat] || '');
+        valSpan.textContent = stats[stat];
+        row.innerHTML = '<span class="stat-name">' + STAT_LABELS[stat] + '</span>';
+        row.appendChild(valSpan);
+        resultsDiv.appendChild(row);
+      }
+      document.getElementById('results-card').classList.add('visible');
+    }
+    
+
+    document.getElementById('race').addEventListener('change', () => {
+      document.getElementById('subrace').value = '';
+      lastPointsLevel = '';
+      update();
+    });
+    document.getElementById('subrace').addEventListener('change', update);
+    document.getElementById('level').addEventListener('input', (e) => {
+      const v = parseInt(e.target.value, 10);
+      document.getElementById('level-num').value = v;
+      lastPointsLevel = '';
+      update();
+    });
+    document.getElementById('level-num').addEventListener('input', (e) => {
+      let v = parseInt(e.target.value, 10) || 1;
+      v = Math.max(1, Math.min(305, v));
+      document.getElementById('level').value = v;
+      e.target.value = v;
+      lastPointsLevel = '';
+      update();
+    });
+    document.getElementById('transform').addEventListener('change', update);
+    document.getElementById('bestAccessories').addEventListener('change', update);
+    document.getElementById('burningFighter').addEventListener('change', update);
+
+    update();
+  </script>
+</body>
+</html>
+    
