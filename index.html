@@ -634,12 +634,13 @@
 
 
     function roundStats(stats) {
-      const out = {};
-      for (const [k, v] of Object.entries(stats)) {
-        out[k] = Math.round(v * 100) / 100;
-      }
-      return out;
+     const out = {};
+     for (const [k, v] of Object.entries(stats)) {
+      out[k] = Math.floor(v); // força inteiro
     }
+    return out;
+    }
+
 
     function update() {
       const race = document.getElementById('race').value;
@@ -761,4 +762,5 @@ if (transforms.some(t => t.id === currentValue)) {
   </script>
 </body>
 </html>
+
     
