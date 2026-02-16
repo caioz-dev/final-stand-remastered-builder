@@ -453,14 +453,23 @@
       for (const s of STATS) stats[s] = 0;
 
       if (race === 'alien' && subrace) {
-        const alienData = RACE_BONUS.alien[subrace];
-        const everyBonus = Math.floor(level / alienData.every);
-        for (const stat of STATS) stats[stat] += everyBonus;
-        for (const [stat, val] of Object.entries(alienData.perLevel)) {
-          stats[stat] += val * (level - 1);
-        }
-        return stats;
-      }
+  const alienData = RACE_BONUS.alien[subrace];
+  const everyBonus = Math.floor(level / alienData.every);
+
+  for (const s of STATS) stats[s] = 0;
+
+  for (const stat of STATS) {
+    if (!alienData.perLevel[stat]) {
+      stats[stat] += everyBonus;
+    }
+  }
+
+  for (const [stat, val] of Object.entries(alienData.perLevel)) {
+    stats[stat] += val * (level - 1);
+  }
+
+  return stats;
+}
 
       const config = RACE_BONUS[race];
       if (!config) return stats;
@@ -591,22 +600,28 @@
     }
 
     function applyTransform(stats, race, transformId) {
-  const list = TRANSFORMS[race] || [];
-  const t = list.find(x => x.id === transformId);
+      let list;
+
+if (race === 'tuffle') {
+  list = getTuffleTransforms();
+} else {
+  list = TRANSFORMS[race] || [];
+}
+
+const t = list.find(x => x.id === transformId);
+
+
   if (!t) return stats;
 
   const out = { ...stats };
 
-  // 🔥 Orange Namekian e SSJG
   if (t.special === 'orange_namekian' || t.special === 'ssjg') {
     const statsToDouble = ['kiDmg', 'kiResistance', 'meleeDmg', 'meleeResistance'];
 
-    // 1️⃣ Soma primeiro
     for (const [stat, val] of Object.entries(t.addAfter || {})) {
       out[stat] = (out[stat] || stats[stat]) + val;
     }
 
-    // 2️⃣ Depois multiplica
     for (const s of statsToDouble) {
       out[s] = (out[s] || stats[s]) * 2;
     }
@@ -614,14 +629,12 @@
     return out;
   }
 
-  // 🔹 Transformações com multiplicador
   if (t.multiplier) {
     for (const [stat, mult] of Object.entries(t.multiplier)) {
       out[stat] = Math.round(stats[stat] * mult);
     }
   }
 
-  // 🔹 Transformações que somam valores fixos
   for (const stat of ['kiDmg', 'kiResistance', 'meleeDmg', 'meleeResistance', 'speed']) {
     if (t[stat] != null) out[stat] += t[stat];
     if (t.speedMult != null && stat === 'speed') {
@@ -636,10 +649,35 @@
     function roundStats(stats) {
      const out = {};
      for (const [k, v] of Object.entries(stats)) {
-      out[k] = Math.floor(v); // força inteiro
+      out[k] = Math.floor(v); 
     }
     return out;
     }
+
+    function getTuffleTransforms() {
+  const forbidden = [
+    'ssjg',
+    'orange_namekian',
+    'golden_form',
+    'purification',
+    'true_anger'
+  ];
+
+  const unique = {};
+  
+  for (const raceKey in TRANSFORMS) {
+    for (const t of TRANSFORMS[raceKey]) {
+
+      if (forbidden.includes(t.id)) continue;
+
+      if (!unique[t.id]) {
+        unique[t.id] = t;
+      }
+    }
+  }
+
+  return Object.values(unique);
+}
 
 
     function update() {
@@ -655,16 +693,33 @@
       document.getElementById('level-num').value = level;
 
       if (lastPointsLevel !== race + '-' + level) buildPointsUI(race, level);
-      const transforms = TRANSFORMS[race] || [];
-      const transformSelect = document.getElementById("transform");
+      let transforms;
 
-      const currentValue = transformSelect.value;
-      transformSelect.innerHTML = '<option value="none">Nenhuma</option>';
-for (const t of transforms) {
-  const option = document.createElement("option");
-  option.value = t.id;
-  option.textContent = t.name;
-  transformSelect.appendChild(option);
+if (race === 'tuffle') {
+  transforms = getTuffleTransforms();
+} else {
+  transforms = TRANSFORMS[race] || [];
+}
+
+
+const transformSelect = document.getElementById("transform");
+const transformCard = document.getElementById("transform-card");
+
+const currentValue = transformSelect.value;
+
+transformSelect.innerHTML = '<option value="none">Nenhuma</option>';
+
+if (race === 'alien' && !subrace) {
+  transformCard.classList.add('hidden');
+} else {
+  transformCard.classList.remove('hidden');
+
+  for (const t of transforms) {
+    const option = document.createElement("option");
+    option.value = t.id;
+    option.textContent = t.name;
+    transformSelect.appendChild(option);
+  }
 }
 
 if (transforms.some(t => t.id === currentValue)) {
@@ -672,19 +727,6 @@ if (transforms.some(t => t.id === currentValue)) {
 } else {
   transformSelect.value = "none";
 }
-
-
-      if (race === 'alien' && !subrace) {
-        document.getElementById('transform-card').classList.add('hidden');
-      } else {
-        document.getElementById('transform-card').classList.remove('hidden');
-        for (const t of transforms) {
-          const opt = document.createElement('option');
-          opt.value = t.id;
-          opt.textContent = t.name;
-          transformSelect.appendChild(opt);
-        }
-      }
 
       const raceBase = calcRaceStats(race, race === 'alien' ? subrace : null, level);
       let extraPoints = getStatsFromDistribution(race, level);
@@ -701,6 +743,7 @@ if (transforms.some(t => t.id === currentValue)) {
       if (bestAccessories) {
        stats.kiMax += 30;
        stats.meleeDmg += 55;
+       stats.kiDmg += 10;
       }
 
       if (transformId && transformId !== 'none') {
@@ -710,7 +753,7 @@ if (transforms.some(t => t.id === currentValue)) {
      if (burningFighter) {
       for (const s of STATS) {
        const bonus = stats[s] - beforeTransform[s];
-       stats[s] += bonus * 0.15;
+       stats[s] += bonus * 0.10;
     }
   }
 }
@@ -764,3 +807,6 @@ if (transforms.some(t => t.id === currentValue)) {
 </html>
 
     
+
+    
+
